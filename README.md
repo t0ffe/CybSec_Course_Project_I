@@ -1,5 +1,15 @@
 # Cyber Security Course Project I
 
+## Todo-app
+#### Can the flaws outlined below be implemented in a TODO app?
+
+1. Yes. The TODOs are saved in a db.
+2. Yes. Accounts for the users.
+3. Yes. Same as #2.
+4. Yes. Possiibility of seeing TODOs that one has no permissions to.
+5. Yes. Log logins / TODOs.
+***
+
 ## 5 Flaws from OWASP
 
 1. [**A03:2021-Injection**](https://owasp.org/Top10/A03_2021-Injection/): Introduce SQL Injection by directly concatenating user inputs into a database query. Fix it by using parameterized queries or using methods provided by Django.
