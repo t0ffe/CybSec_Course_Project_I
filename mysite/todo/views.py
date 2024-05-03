@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 
@@ -14,10 +14,18 @@ def todo(request):
     return render(request, 'todos.html')
 
 def login(request):
-    
-    
-    return render(request, 'login.html')
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    if request.method == 'POST':
+        return redirect('login')
 
 def signup(request):
-    form = UserCreationForm
-    return render(request, 'signup.html')
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            print(user)
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'signup.html', {'form': form})

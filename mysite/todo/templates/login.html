@@ -6,6 +6,7 @@ You've logged in as <b>{{ session.username }}</b>
 <h2>Login</h2>
 
 <form action="/login" method="post">
+{% csrf_token %}
 Username: <br><input type="text" name="username">
 <p>
 Password: <br><input type="password" name="password">
