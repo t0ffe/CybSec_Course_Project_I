@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 # Create your views here.
 def index(request):
@@ -10,8 +10,7 @@ def index(request):
 def todo(request):
     tasks = Task.objects.all()
     print(tasks)
-    #, {'tasks':tasks}
-    return render(request, 'todos.html')
+    return render(request, 'todos.html', {'tasks':tasks})
 
 def login(request):
     if request.method == 'GET':
