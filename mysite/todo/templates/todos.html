@@ -1,12 +1,17 @@
 <h1>TODOs</h1>
+<form action="/todo" method="POST">
+    {% csrf_token %}
+    {{form.title}}
+    <input type="submit" name="Add Task" > 
+</form>
+
 {% for task in tasks %}
     <div>
-        <p>{{ task.title }}</p>
         <input type="checkbox" value="1"/>
         <label  class="strikethrough">{{ task.title }}</label>
         <a href="#"><button>Delete</button></a>
     </div>
 {% empty %}
-<h3> No items in list</h3>
-<a href="/">Back</a>
+<h3> No tasks to show</h3>
 {% endfor %}
+<a href="/">Back</a>

@@ -5,7 +5,7 @@ You've logged in as <b>{{ session.username }}</b>
 
 <h2>Sign Up</h2>
 
-<form action="/signup" method="post">
+<form action="/login" method="POST">
 {% csrf_token %}
 Username: <br><input type="text" name="username">
 <p>
