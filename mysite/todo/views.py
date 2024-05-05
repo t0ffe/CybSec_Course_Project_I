@@ -32,6 +32,11 @@ def updateTodo(request, pk):
 
     return render(request, 'update_todo.html', {'form': form})
 
+def deleteTodo(request, pk):
+    todo = Todo.objects.get(id=pk)
+    todo.delete()
+    return redirect('todo')
+
 def login(request):
     if request.method == 'GET':
         return render(request, 'login.html')

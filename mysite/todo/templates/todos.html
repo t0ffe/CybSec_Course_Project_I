@@ -9,7 +9,7 @@
     <div>
         <input type="checkbox" value="1"/>
         <label  class="strikethrough">{{ todo.title }}</label>
-        <a href="#"><button>Delete</button></a>
+        <a href="{% url 'delete_todo' todo.id %}"><button>Delete</button></a>
         <a href="{% url 'update_todo' todo.id %}"><button>Update</button></a>
     </div>
 {% empty %}
