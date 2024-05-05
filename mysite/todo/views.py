@@ -20,6 +20,18 @@ def todo(request):
     
     return render(request, 'todos.html', {'todos':todos, 'form':form})
 
+def updateTodo(request, pk):
+    todo = Todo.objects.get(id=pk)
+    form = TodoForm(instance=todo)
+
+    if request.method == 'POST':
+        form = TodoForm(request.POST, instance=todo)
+        if form.is_valid():
+            form.save()
+            return redirect('todo')
+
+    return render(request, 'update_todo.html', {'form': form})
+
 def login(request):
     if request.method == 'GET':
         return render(request, 'login.html')

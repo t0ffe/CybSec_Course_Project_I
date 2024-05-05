@@ -1,17 +1,7 @@
 <h1>Update todo</h1>
-<form action="/todo" method="POST">
+<form action="" method="POST">
     {% csrf_token %}
-    {{form.title}}
+    {{form}}
     <input type="submit" name="Update Todo" > 
 </form>
-
-{% for todo in todos %}
-    <div>
-        <input type="checkbox" value="1"/>
-        <label  class="strikethrough">{{ todo.title }}</label>
-        <a href="#"><button>Delete</button></a>
-    </div>
-{% empty %}
-<h3> No todos to show</h3>
-{% endfor %}
-<a href="/">Back</a>
+<a href="/todo">Back</a>

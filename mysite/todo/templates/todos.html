@@ -10,6 +10,7 @@
         <input type="checkbox" value="1"/>
         <label  class="strikethrough">{{ todo.title }}</label>
         <a href="#"><button>Delete</button></a>
+        <a href="{% url 'update_todo' todo.id %}"><button>Update</button></a>
     </div>
 {% empty %}
 <h3> No todos to show</h3>
