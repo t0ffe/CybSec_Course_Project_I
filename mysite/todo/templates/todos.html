@@ -7,8 +7,12 @@
 
 {% for todo in todos %}
     <div>
-        <input type="checkbox" value="1"/>
-        <label  class="strikethrough">{{ todo.title }}</label>
+        <input type="checkbox" {% if todo.completed == True %} checked {% else %} '' {% endif %}/>
+        {% if todo.completed == True %}
+        <strike>{{ todo.title }}</strike>
+        {% else %}
+        <label>{{ todo.title }}</label>
+        {% endif %}        
         <a href="{% url 'delete_todo' todo.id %}"><button>Delete</button></a>
         <a href="{% url 'update_todo' todo.id %}"><button>Update</button></a>
     </div>
