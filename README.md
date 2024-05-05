@@ -1,7 +1,7 @@
  # Cyber Security Course Project I: TODO app
 
 ## Description
-This project involves creating a secure TODO application where users can create, read, update, and delete their tasks. The TODOs are saved in a database.
+This project involves creating a secure TODO application where users can create, read, update, and delete their todos. The TODOs are saved in a database.
 
 ## 5 Flaws from OWASP
 

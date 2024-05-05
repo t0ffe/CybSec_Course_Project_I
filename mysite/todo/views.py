@@ -9,16 +9,16 @@ def index(request):
 
 
 def todo(request):
-    tasks = Task.objects.all()
-    form = TaskForm()
+    todos = Todo.objects.all()
+    form = TodoForm()
 
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TodoForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('todo')
     
-    return render(request, 'todos.html', {'tasks':tasks, 'form':form})
+    return render(request, 'todos.html', {'todos':todos, 'form':form})
 
 def login(request):
     if request.method == 'GET':

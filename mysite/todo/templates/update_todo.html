@@ -2,16 +2,16 @@
 <form action="/todo" method="POST">
     {% csrf_token %}
     {{form.title}}
-    <input type="submit" name="Add Task" > 
+    <input type="submit" name="Update Todo" > 
 </form>
 
-{% for task in tasks %}
+{% for todo in todos %}
     <div>
         <input type="checkbox" value="1"/>
-        <label  class="strikethrough">{{ task.title }}</label>
+        <label  class="strikethrough">{{ todo.title }}</label>
         <a href="#"><button>Delete</button></a>
     </div>
 {% empty %}
-<h3> No tasks to show</h3>
+<h3> No todos to show</h3>
 {% endfor %}
 <a href="/">Back</a>
