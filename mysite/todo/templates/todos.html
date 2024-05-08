@@ -2,7 +2,7 @@
 <form action="/todo" method="POST">
     {% csrf_token %}
     {{form.title}}
-    <input type="submit" name="Add Todo" > 
+    <input type="submit" value="Add Todo" > 
 </form>
 
 {% for todo in todos %}
