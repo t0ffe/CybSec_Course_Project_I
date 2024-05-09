@@ -53,6 +53,10 @@ def loginPage(request):
             return redirect('login')
 
     return render(request, 'login.html')
+
+def logoutPage(request):
+    logout(request)
+    return redirect('index') 
     
 
 def signupPage(request):

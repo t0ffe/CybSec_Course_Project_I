@@ -1,6 +1,6 @@
 
-{% if username %}}
-    <h1>{{ Username }}</h1>
+{% if request.user.is_active  %}
+    <h1>Logged in as {{ request.user }}</h1>
     <a href="/logout">Logout</a>
 {% else %}
     <h1>Not logged in</h1>
