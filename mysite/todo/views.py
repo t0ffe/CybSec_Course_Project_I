@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
+from django.contrib.auth import login, logout, authenticate
 
 # Create your views here.
 def index(request):
@@ -36,13 +37,25 @@ def deleteTodo(request, pk):
     todo.delete()
     return redirect('todo')
 
-def login(request):
-    if request.method == 'GET':
-        return render(request, 'login.html')
-    if request.method == 'POST':
-        return redirect('login')
+def loginPage(request):
 
-def signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')    
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            print(user)
+            login(request, user)
+            return redirect('index')
+        else:
+            return redirect('login')
+
+    return render(request, 'login.html')
+    
+
+def signupPage(request):
     form = SignUpForm()
 
     if request.method == 'POST':
