@@ -10,14 +10,18 @@ def index(request):
 
 @login_required(login_url='index')
 def todo(request):
-    todos = Todo.objects.all()
+    todos = Todo.objects.filter(created_by=request.user)
     form = TodoForm()
 
     if request.method == 'POST':
         form = TodoForm(request.POST)
+        todo = form.save(commit=False)
+        todo.created_by = request.user
         if form.is_valid():
             form.save()
             return redirect('todo')
+        else:
+            print(form)
     
     return render(request, 'todos.html', {'todos':todos, 'form':form})
 

@@ -8,7 +8,7 @@ class TodoForm(ModelForm):
 
     class Meta:
         model = Todo
-        fields = '__all__'
+        fields = ['title', 'completed']
 
 
 class SignUpForm(UserCreationForm):
