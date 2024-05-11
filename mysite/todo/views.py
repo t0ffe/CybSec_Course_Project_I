@@ -20,8 +20,6 @@ def todo(request):
         if form.is_valid():
             form.save()
             return redirect('todo')
-        else:
-            print(form)
     
     return render(request, 'todos.html', {'todos':todos, 'form':form})
 
@@ -52,7 +50,6 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            print(user)
             login(request, user)
             return redirect('index')
         else:
