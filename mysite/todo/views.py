@@ -7,13 +7,24 @@ from django.db import connection #for the unsafe db insertion
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    #-----------------------------------------------------------
+    username = request.session.get("loggedin")
+    #-----------------------------------------------------------
+    return render(request, 'index.html', {'username':username})
 
-@login_required(login_url='index')
+#@login_required(login_url='index')
 def todo(request):
-    todos = Todo.objects.filter(created_by=request.user)
+    
+    #-----------------------------------------------------------
+    #4. A01:2021-Broken Access Control. Anyone can say every todo.
+    todos = Todo.objects.all()
+    #-----------------------------------------------------------
+
+    #4. A01:2021-Broken Access Control. Filter so that user can only see their own todos.
+    #todos = Todo.objects.filter(created_by=request.user)
     form = TodoForm()
 
+    #-----------------------------------------------------------
     #1. A03:2021-Injection. Unsafe way
     if request.method == 'POST':
 
@@ -32,6 +43,7 @@ def todo(request):
         cursor.executescript(raw_query)
 
         return redirect('todo')
+    #-----------------------------------------------------------
 
     #1. A03:2021-Injection. Safe way / fix.
     #if request.method == 'POST':
@@ -44,7 +56,7 @@ def todo(request):
     
     return render(request, 'todos.html', {'todos':todos, 'form':form})
 
-@login_required(login_url='index')
+#@login_required(login_url='index')
 def updateTodo(request, pk):
     todo = Todo.objects.get(id=pk)
     form = TodoForm(instance=todo)
@@ -57,7 +69,7 @@ def updateTodo(request, pk):
 
     return render(request, 'update_todo.html', {'form': form})
 
-@login_required(login_url='index')
+#@login_required(login_url='index')
 def deleteTodo(request, pk):
     todo = Todo.objects.get(id=pk)
     todo.delete()
@@ -65,31 +77,63 @@ def deleteTodo(request, pk):
 
 def loginPage(request):
     if request.method == 'POST':
+
+        #-----------------------------------------------------------
+        #2. A07:2021-Identification and Authentication Failures. Unsafe way.
+        #3. A02:2021-Cryptographic Failures. Unsafe way.
         username = request.POST.get('username')
-        password = request.POST.get('password')    
+        password = request.POST.get('password')  
+        user = UnsafeUser.objects.get(username=username)
 
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
+        if user.password == password:
+            request.session["loggedin"] = username
             return redirect('index')
-        else:
-            return redirect('login')
+        #-----------------------------------------------------------
+
+        #2. A07:2021-Identification and Authentication Failures. Safe way / fix.
+        #3. A02:2021-Cryptographic Failures. Safe way / fix.
+        #user = authenticate(request, username=username, password=password)
+        #if user is not None:
+        #    login(request, user)
+        #    return redirect('index')
+        #else:
+        #    return redirect('login')
 
     return render(request, 'login.html')
 
 def logoutPage(request):
-    logout(request)
+    #-----------------------------------------------------------
+    request.session["loggedin"] = ''
+    #-----------------------------------------------------------
+    
+    #logout(request)
     return redirect('index') 
     
 
 def signupPage(request):
     form = SignUpForm()
 
+    
+    #-----------------------------------------------------------
+    #2. A07:2021-Identification and Authentication Failures. Unsafe way.
+    #3. A02:2021-Cryptographic Failures. Unsafe way.
+
+    # This way allows the creation of users with weak passwords.
+    # They are stored in UnsafeUsers.
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
+        username = request.POST.get('username','')
+        password = request.POST.get('password','')
+        print(username, password)
+        UnsafeUser.objects.create(username = username, password = password)
+        return redirect('login')
+    #-----------------------------------------------------------
+
+    #2. A07:2021-Identification and Authentication Failures. Safe way / fix.
+    #3. A02:2021-Cryptographic Failures. Safe way / fix.
+    #if request.method == 'POST':
+    #    form = SignUpForm(request.POST)
+    #    if form.is_valid():
+    #        form.save()
+    #        return redirect('login')
 
     return render(request, 'signup.html', {'form': form})

@@ -4,7 +4,7 @@ You've logged in as <b>{{ session.username }}</b>
 {% else %}
 
 <h2>Sign Up</h2>
-
+<!--
 <form action="" method="POST">
 {% csrf_token %}
 {{ form.username.label }}:
@@ -25,6 +25,16 @@ You've logged in as <b>{{ session.username }}</b>
 </form>
 
 {{form.errors}}
+-->
+
+<form action="/signup" method="POST">
+    {% csrf_token %}
+    Username: <br><input type="text" name="username">
+    <p>
+    Password: <br><input type="password" name="password">
+    <p>
+    <input type="submit" value="Sign Up">
+</form>
 
 <a href="/login">Login</a>
 <p>

@@ -9,3 +9,15 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.title
+
+#-----------------------------------------------------------
+#2. A07:2021-Identification and Authentication Failures. Unsafe way.
+#3. A02:2021-Cryptographic Failures. Unsafe way.
+# Model so that passwords can be saved as plaintext
+class UnsafeUser(models.Model):
+    username = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.username
+#-----------------------------------------------------------
