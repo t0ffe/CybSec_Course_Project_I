@@ -13,7 +13,7 @@ This project involves creating a secure TODO application where users can create,
 
 - [x] 4. [**A01:2021-Broken Access Control**](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
 
-- [ ] 5. [**A09:2021-Security Logging and Monitoring Failures**](https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/): Auditable events, such as logins, failed logins, and high-value transactions, are not logged. Fix it by logging them.
+- [x] 5. [**A09:2021-Security Logging and Monitoring Failures**](https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/): Auditable events, such as logins, failed logins, and high-value transactions, are not logged. Fix it by logging them.
 
 ***
 #### Can the flaws outlined above be implemented in a TODO app?
