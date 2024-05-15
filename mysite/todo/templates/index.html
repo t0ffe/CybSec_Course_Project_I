@@ -1,16 +1,16 @@
-<h1>Logged in as {{ username }}</h1>
-<a href="/login">Login</a>
-<a href="/logout">Logout</a>
-<a href="/todo">Todos</a>
+{% if safe %}
+    {% if request.user.is_active  %}
+        <h1>Logged in as {{ request.user }}</h1>
+        <a href="/logout">Logout</a>
+    {% else %}
+        <h1>Not logged in</h1>
+        <a href="/login">Login</a>
+    {% endif %}
+    <a href="/todo">Todos</a>
 
-<!--
-{% if request.user.is_active  %}
-    <h1>Logged in as {{ request.user }}</h1>
-    <a href="/logout">Logout</a>
 {% else %}
-    <h1>Not logged in</h1>
+    <h1>Logged in as {{ username }}</h1>
     <a href="/login">Login</a>
+    <a href="/logout">Logout</a>
+    <a href="/todo">Todos</a>
 {% endif %}
-
-<a href="/todo">Todos</a>
--->
