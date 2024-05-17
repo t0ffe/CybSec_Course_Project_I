@@ -1,0 +1,58 @@
+LINK: https://github.com/t0ffe/CybSec_Course_Project_I
+To run the app you should have Pyhton and Django installed. If not refer to their respective sites for installation instructions for your platform. In general if you already have python Django should install itself with the following command.
+
+python3 -m pip install django
+
+Next clone the repo to your computer. (git or download zip)
+After that navigate to "my site" folder and run the following commands:
+
+These make sure the local db is as needed:
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+This creates a admin user so you can check the flaws functionalities:
+python3 manage.py createsuperuser
+
+And finally this starts the server, by default at http://127.0.0.1:8000/ :
+python3 manage.py runserver
+
+In mysite/todo/flags.py you have a safety flag that is by default set to True. Changing it to false, changes the code to use the unsafe / flawed versions of code.
+
+
+------------------------------------------------
+FLAW 1:
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L50-L68
+
+The first flaw is A03:2021 – Injection
+In the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L62-L64 we construct the raw SQL query from the users input. The input is the todo's title. Then on the following line we exequte the SQL query. It is not sanitized, so for example The following input: "1','0','2'); UPDATE todo_todo SET title='hacked' WHERE 1 = 1; --" changes all task's titles to 'hacked'. A more malisious input such as "1','0','2'); DROP TABLE todo_todo; --" will drop the table that contains all the todos rendering the app unusable, as the site is looking for a databse table that is no longer there.
+
+We can fix this by sanitizing the users' inputs. This is done by using Django's built in way of handling the queries. We can see the implementation on https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L43-L47. Here we use Django's ORM to handle the database entries.
+
+------------------------------------------------
+FLAW 2:
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L108-L117
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L146-L157
+
+Permits default, weak, or well-known passwords
+how to fix it...
+
+------------------------------------------------
+FLAW 3:
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L15-L25
+
+Uses plain text, encrypted, or weakly hashed passwords data stores
+how to fix it...
+
+------------------------------------------------
+FLAW 4:
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L36
+
+Broken access control
+how to fix it...
+
+------------------------------------------------
+FLAW 5:
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L27-L47
+
+Auditable events, such as logins and failed logins are not logged.
+how to fix it...
