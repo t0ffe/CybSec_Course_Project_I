@@ -1,22 +1,22 @@
 LINK: https://github.com/t0ffe/CybSec_Course_Project_I
-To run the app you should have Pyhton and Django installed. If not refer to their respective sites for installation instructions for your platform. In general if you already have python Django should install itself with the following command.
+To run the app, you should have Pyhton and Django installed. If not, refer to their respective sites for installation instructions for your platform. In general, if you already have Python, Django should install itself with the following command:.
 
 python3 -m pip install django
 
-Next clone the repo to your computer. (git or download zip)
-After that navigate to "my site" folder and run the following commands:
+Next, clone the repo to your computer. (git or download zip)
+After that, navigate to the "my site" folder and run the following commands:
 
-These make sure the local db is as needed:
+These make sure the local database is as needed:
 python3 manage.py makemigrations
 python3 manage.py migrate
 
-This creates a admin user so you can check the flaws functionalities:
+This creates an admin user, so you can check the flaws and functionalities:
 python3 manage.py createsuperuser
 
-And finally this starts the server, by default at http://127.0.0.1:8000/ :
+And finally, this starts the server by default at http://127.0.0.1:8000/ :
 python3 manage.py runserver
 
-In mysite/todo/flags.py you have a safety flag that is by default set to True. Changing it to false, changes the code to use the unsafe / flawed versions of code.
+In mysite/todo/flags.py, you have a safety flag that is by default set to True. Changing it to false changes the code to use the unsafe / flawed versions of the code.
 
 
 ------------------------------------------------
@@ -24,9 +24,9 @@ FLAW 1:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L50-L68
 
 The first flaw is A03:2021 – Injection
-In the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L62-L64 we construct the raw SQL query from the users input. The input is the todo's title. Then on the following line we exequte the SQL query. It is not sanitized, so for example The following input: "1','0','2'); UPDATE todo_todo SET title='hacked' WHERE 1 = 1; --" changes all task's titles to 'hacked'. A more malisious input such as "1','0','2'); DROP TABLE todo_todo; --" will drop the table that contains all the todos rendering the app unusable, as the site is looking for a databse table that is no longer there.
+In the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L62-L64 We construct the raw SQL query from the user's input. The input is the todo's title. Then, on the following line, we execute the SQL query. It is not sanitized, so, for example, The following input: "1','0','2'); UPDATE todo_todo SET title='hacked' WHERE 1 = 1; --" changes all tasks's titles to 'hacked'. A more malicious input such as "1','0','2'); DROP TABLE todo_todo; --" will drop the table that contains all the todos, rendering the app unusable, as the site is looking for a database table that is no longer there.
 
-We can fix this by sanitizing the users' inputs. This is done by using Django's built in way of handling the queries. We can see the implementation on https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L43-L47. Here we use Django's ORM to handle the database entries.
+We can fix this by sanitizing the users' inputs. This is done by using Django's built-in way of handling the queries. We can see the implementation at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L43-L47. Here, we use Django's ORM to handle the database entries.
 
 ------------------------------------------------
 FLAW 2:
