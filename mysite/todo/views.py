@@ -151,7 +151,6 @@ def signupPage(request):
             # They are stored in UnsafeUsers.
             username = request.POST.get('username','')
             password = request.POST.get('password','')
-            print(username, password)
             UnsafeUser.objects.create(username = username, password = password)
             return redirect('login')
         #-----------------------------------------------------------
