@@ -57,12 +57,21 @@ We can verify that the passwords are stored hashed by going to http://127.0.0.1:
 FLAW 4:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L36
 
-Broken access control
+The fourth flaw is A01:2021-Broken Access Control.
+In the unsafe version of the code, when we are retrieving the todos that will be shown to the end user, we do no filtering and show any user every todo that is in the database. This is done here: https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L36.
+
+We can fix this by filtering the todos to those created by the currently logged-in user. This is done at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L33.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!Additionally updating is broken and needs to be fixed!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 how to fix it...
 
 ------------------------------------------------
 FLAW 5:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L27-L47
 
-Auditable events, such as logins and failed logins are not logged.
-how to fix it...
+The fifth and final flaw is A09:2021-Security Logging and Monitoring Failures.
+In the broken code, we do not do any kind of logging of logins.
+
+We can fix this by logging such events. In the code, we first create a database model for these actions at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L28-L33. It contains the action and the username of the user who did it. We are monitoring for successful logins, logouts, and failed logins. To do this, we are using Django's signals feature, which tells us when any of these actions happen.
