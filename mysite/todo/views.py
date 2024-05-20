@@ -4,6 +4,7 @@ from .forms import *
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db import connection #for the unsafe db insertion
+from django.core.exceptions import PermissionDenied
 
 from .flags import safe
 
@@ -73,7 +74,9 @@ def todo(request):
 def updateTodo(request, pk):
     todo = Todo.objects.get(id=pk)
     form = TodoForm(instance=todo)
-
+    if safe:
+        if request.user != todo.created_by:
+            raise PermissionDenied
     if request.method == 'POST':
         form = TodoForm(request.POST, instance=todo)
         if form.is_valid():
@@ -85,6 +88,9 @@ def updateTodo(request, pk):
 @safety_decorator(login_required, safe)
 def deleteTodo(request, pk):
     todo = Todo.objects.get(id=pk)
+    if safe:
+        if request.user != todo.created_by:
+            raise PermissionDenied
     todo.delete()
     return redirect('todo')
 
