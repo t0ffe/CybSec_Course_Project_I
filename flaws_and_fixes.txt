@@ -22,6 +22,7 @@ In mysite/todo/flags.py, we have a safety flag that is by default set to True. C
 
 
 ------------------------------------------------
+
 FLAW 1:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L51-L69
 
@@ -30,7 +31,7 @@ In the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite
 
 We can fix this by sanitizing the users' inputs. This is done by using Django's built-in way of handling the queries. We can see the implementation at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L44-L48. Here, we use Django's ORM to handle the database entries.
 
-------------------------------------------------
+
 FLAW 2:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L114-L123
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L152-L162
@@ -41,7 +42,6 @@ Firstly, in the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/ma
 We can fix the flaw by not allowing such passwords. On lines https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L147-L150 we use Django's recommended user management convention. We get the username and password via a form that is validated before being accepted. In the validation process, Django checks that the passwords are not too short, too common, default, or consist only of numbers, to name a few checks. The form also has two password fields to ensure the user writes their password correctly.
 
 
-------------------------------------------------
 FLAW 3:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L15-L25
 
@@ -53,7 +53,6 @@ We can fix this by not storing the passwords as plaintext but instead hashing th
 We can verify that the passwords are stored hashed by going to http://127.0.0.1:8000/admin/auth/user/.
 
 
-------------------------------------------------
 FLAW 4:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L37
 
@@ -62,12 +61,11 @@ In the unsafe version of the code, when we are retrieving the todos that will be
 
 We can fix this by filtering the todos to those created by the currently logged-in user. This is done at https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L34.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!Additionally updating is broken and needs to be fixed!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-how to fix it...
+Additionally updating and deleting is unsafe. If we know a todo's id in the database we can go to http://localhost:8000/delete_todo/[id_of_todo_here]/ or http://localhost:8000/update_todo/[id_of_todo_here]/ to delete or update that todo. When updating the todo we can see it's contents, which could have some sensitive information. 
 
-------------------------------------------------
+We can fix this by checking if the todo that we are trying to update or delete is created by the currently logged in user. This is done on lines https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L78 and https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/views.py#L92, for updating and deletion, respectively.
+
+
 FLAW 5:
 https://github.com/t0ffe/CybSec_Course_Project_I/blob/main/mysite/todo/models.py#L27-L47
 
