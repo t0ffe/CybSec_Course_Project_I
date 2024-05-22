@@ -1,26 +1,86 @@
- # Cyber Security Course Project I: TODO app
-
+# Cyber Security Base 2024 - Course Project I
+ 
 ## Description
-This project involves creating a secure TODO application where users can create, read, update, and delete their todos. The TODOs are saved in a database.
+This is my [CSB](https://cybersecuritybase.mooc.fi/) Course Project I with flaws from the [OWASP 2021 top 10 list](https://owasp.org/Top10/). It is a simple TODO application where users can create, read, update, and delete their todos.
+In order to use the application, users must log in first. Logged users can access the main page of the application where adding and viewing todos is possible.
+
+## Instructions
+
+To run the app, you should have Python and Django installed. If not, refer to their respective sites for installation instructions for your platform. In general, if you already have Python, Django should install itself with the following command:
+```
+pip install django
+```
+
+Next, clone the repo to your computer. (git or download zip)
+```
+git clone https://github.com/t0ffe/CybSec_Course_Project_I.git
+```
+
+After that, navigate to the `CybSec_Course_Project_I/mysite/` folder and run the following commands:
+
+These make sure the local database is as needed:
+```
+python3 manage.py makemigrations
+```
+```
+python3 manage.py migrate
+```
+This creates an admin user, so we can check the flaws and functionalities:
+```
+python3 manage.py createsuperuser
+```
+And finally, this starts the server by default at http://127.0.0.1:8000/:
+```
+python3 manage.py runserver
+```
+
+Then on your web browser go to http://127.0.0.1:8000/
+
+In `mysite/todo/flags.py`, we have a safety flag that is by default set to `True`. Changing it to `False` changes the code to use the unsafe / flawed versions of the code.
 
 ## 5 Flaws from OWASP
 
-- [x] 1. [**A03:2021-Injection**](https://owasp.org/Top10/A03_2021-Injection/): Introduce SQL Injection by directly concatenating user inputs into a database query. Fix it by using parameterized queries or using methods provided by Django.
+### FLAW 1. [**A03:2021-Injection**](https://owasp.org/Top10/A03_2021-Injection/)
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L51-L69
 
-- [x] 2. [**A07:2021-Identification and Authentication Failures**](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/): Permits default, weak, or well-known passwords, such as "Password1" or "admin/admin". Fix it by not allowing such passwords.
+The first flaw is A03:2021 – Injection
+In the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L63-L66 we construct the raw SQL query from the user's input. The input is the todo's title. Then, on the following line, we execute the SQL query. It is not sanitized, so, for example, the following input: "1','0','2'); UPDATE todo_todo SET title='hacked' WHERE 1 = 1; --" changes all tasks' title to 'hacked'. A more malicious input such as "1','0','2'); DROP TABLE todo_todo; --" will drop the table that contains all the todos, rendering the app unusable, as the site is looking for a database table that is no longer there.
 
-- [x] 3. [**A02:2021-Cryptographic Failures**](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/): Uses plain text, encrypted, or weakly hashed passwords data stores. Fix it by ensuring passwords are hashed securely.
-
-- [x] 4. [**A01:2021-Broken Access Control**](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
-
-- [x] 5. [**A09:2021-Security Logging and Monitoring Failures**](https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/): Auditable events, such as logins, failed logins, and high-value transactions, are not logged. Fix it by logging them.
+We can fix this by sanitizing the users' inputs. This is done by using Django's built-in way of handling the queries. We can see the implementation at https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L44-L48 Here, we use Django's ORM to handle the database entries.
 
 ***
-#### Can the flaws outlined above be implemented in a TODO app?
+### FLAW 2. [**A07:2021-Identification and Authentication Failures**](https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/)
+The second flaw is A07:2021-Identification and Authentication Failures.
+Firstly, in the code at https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L152-L162 we allow the creation of user accounts with default, weak, or well-known passwords. The code does not check the password in any way and allows any (even empty) passwords. The username and password are then stored in a custom database entry called "UnsafeUser".
 
-1. Yes. The TODOs are saved in a db.
-2. Yes. Accounts for the users.
-3. Yes. Same as #2.
-4. Yes. Possiibility of seeing TODOs that one has no permissions to.
-5. Yes. Log logins / TODOs.
+We can fix the flaw by not allowing such passwords. On lines https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L147-L150 we use Django's recommended user management convention. We get the username and password via a form that is validated before being accepted. In the validation process, Django checks that the passwords are not too short, too common, default, or consist only of numbers, to name a few checks. The form also has two password fields to ensure the user writes their password correctly.
 
+***
+### FLAW 3. [**A02:2021-Cryptographic Failures**](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)
+The third flaw is A02:2021-Cryptographic Failures.
+As discussed above, the users are stored in the UnsafeUser database table. On lines https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/models.py#L15-L25 is the code for the UnsafeUser model. The username and password are stored as CharField, aka. plaintext. This database table is only used when the "safe" flag is set to False. Because we are now using a different mode to store user information, the login method has also been changed to use this model. https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L114-L123
+We can verify that the passwords are not hashed by starting the application, as instructed in the beginning of this report, and going to `http://127.0.0.1:8000/admin/todo/unsafeuser/`. To get here, we must login using the credentials we created when we ran the command `python3 manage.py createsuperuser`. The database entry `UnsafeUser` is only visible here if the `safe` flag is set to `False`.
+
+We can fix this by not storing the passwords as plaintext but instead hashing them. Here https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L114-L123 we get the passwords using Django's form and save them in Django's default User table. The passwords in the Default User table are hashed. This table is not present in models.py because we have no need to create it, as it was created by default by Django.
+We can verify that the passwords are stored hashed by going to http://127.0.0.1:8000/admin/auth/user/.
+
+***
+### FLAW 4. [**A01:2021-Broken Access Control**](https://owasp.org/Top10/A01_2021-Broken_Access_Control/)
+
+The fourth flaw is A01:2021-Broken Access Control.
+In the unsafe version of the code, when we are retrieving the todos that will be shown to the end user, we do no filtering and show any user every todo that is in the database. This is done here: https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L37
+
+We can fix this by filtering the todos to those created by the currently logged-in user. This is done at https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L34
+
+Additionally updating and deleting is unsafe. If we know a todo's id in the database we can go to `http://localhost:8000/delete_todo/[id_of_todo_here]/` or `http://localhost:8000/update_todo/[id_of_todo_here]/` to delete or update that todo. When updating the todo we can see it's contents, which could have some sensitive information. 
+
+We can fix this by checking if the todo that we are trying to update or delete is created by the currently logged in user. This is done on lines https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L78 https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/views.py#L92 for updating and deletion, respectively.
+
+***
+### FLAW 5. [**A09:2021-Security Logging and Monitoring Failures**](https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/)
+https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/models.py#L27-L47
+
+The fifth and final flaw is A09:2021-Security Logging and Monitoring Failures.
+In the broken code, we do not do any kind of logging of logins.
+
+We can fix this by logging such events. In the code, we first create a database model for these actions at https://github.com/t0ffe/CybSec_Course_Project_I/blob/833194b8eec629b81dd1ca32eff11bad822eeee5/mysite/todo/models.py#L28-L33 It contains the action and the username of the user who did it. We are monitoring for successful logins, logouts, and failed logins. To do this, we are using Django's signals feature, which tells us when any of these actions happen.
